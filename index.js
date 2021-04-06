@@ -9,17 +9,17 @@ let setNotes = (notes) => {
 }
 let getIntervalSelection = () => parseInt($("#interval").val());
 let currentNotes = [];
+let note1Lock = false;
+let note2Lock = false;
+let streak = 0;
 
-let flashGreen = () => {
-    $("#main").css("background-color","lightgreen");
-
-    setTimeout(() => {
-        $("#main").css("background-color","white");
-    }, 200);
+let setStreak = (newStreak) => {
+    streak = newStreak;
+    $("#streak").text(`Streak: ${streak}`);
 }
 
-let flashRed = () => {
-    $("#main").css("background-color","lightcoral");
+let flash = (colour) => {
+    $("#main").css("background-color", colour);
 
     setTimeout(() => {
         $("#main").css("background-color","white");
@@ -27,14 +27,15 @@ let flashRed = () => {
 }
 
 let getRandomNotes = () => {
-    let rand1 = Math.floor(Math.random() * notes.length + 1);
-    let rand2 = Math.floor(Math.random() * notes.length + 1);
+    let note1 = note1Lock ? notes.indexOf(getNote1()) + 1 : Math.floor(Math.random() * notes.length + 1);
+    let note2 = note2Lock ? notes.indexOf(getNote2()) + 1 : Math.floor(Math.random() * notes.length + 1);
 
-    while (rand1 - 1 === rand2 - 1) {
-        rand2 = Math.floor(Math.random() * notes.length + 1);
+    while (note1 - 1 === note2 - 1) { 
+        note1 = note1Lock ? notes.indexOf(getNote1()) + 1 : Math.floor(Math.random() * notes.length + 1);
+        note2 = note2Lock ? notes.indexOf(getNote2()) + 1 : Math.floor(Math.random() * notes.length + 1);
     }
 
-    return [notes[rand1 - 1], notes[rand2 - 1]];
+    return [notes[note1 - 1], notes[note2 - 1]];
 }
 
 let getInterval = () => {
@@ -60,21 +61,50 @@ let getSuffix = (number) => {
     }
 }
 
+let toggleLock = (lock) => {
+    let isLock1 = lock === "lock1";
+    let status = isLock1 ? !note1Lock : !note2Lock;
+    let lockElement = isLock1 ? $("#lock1") : $("#lock2");
+
+    if (status) {
+        isLock1 ? note1Lock = true : note2Lock = true;
+        lockElement.removeClass("btn-outline-danger");
+        lockElement.addClass("btn-danger");
+        lockElement.text("Locked");
+        return;
+    }
+
+    isLock1 ? note1Lock = false : note2Lock = false;
+    lockElement.addClass("btn-outline-danger");
+    lockElement.removeClass("btn-danger");
+    lockElement.text("Unlocked");
+}
+
 $(document).ready(() => {
     setNotes(getRandomNotes());
 
     $("#interval").change(() => {
         $("#selection").text(`Your selection: ${$("#interval").val()}`);
         $("#suffix").text(`${getSuffix(getIntervalSelection())}`);
-    })
+    });
+
+    $("#lock1").click(() => {
+        toggleLock("lock1");
+    });
+
+    $("#lock2").click(() => {
+        toggleLock("lock2");
+    });
 
     $("#submit").click(() => {
         if (getIntervalSelection() === getInterval()) {
-            flashGreen();
+            flash("lightgreen");
             setNotes(getRandomNotes());
+            setStreak(streak + 1)
         }
         else {
-            flashRed();
+            flash("lightcoral");
+            setStreak(0)
         }
         $("#interval").focus();
     });
