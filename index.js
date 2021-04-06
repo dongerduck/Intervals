@@ -13,12 +13,12 @@ let note1Lock = false;
 let note2Lock = false;
 let streak = 0;
 
-const setStreak = (newStreak) => {
+let setStreak = (newStreak) => {
     streak = newStreak;
     $("#streak").text(`Streak: ${streak}`);
 }
 
-const flash = (colour) => {
+let flash = (colour) => {
     $("#main").css("background-color", colour);
 
     setTimeout(() => {
@@ -26,7 +26,7 @@ const flash = (colour) => {
     }, 200);
 }
 
-const getRandomNotes = () => {
+let getRandomNotes = () => {
     let note1 = note1Lock ? notes.indexOf(getNote1()) + 1 : Math.floor(Math.random() * notes.length + 1);
     let note2 = note2Lock ? notes.indexOf(getNote2()) + 1 : Math.floor(Math.random() * notes.length + 1);
 
@@ -38,7 +38,7 @@ const getRandomNotes = () => {
     return [notes[note1 - 1], notes[note2 - 1]];
 }
 
-const getInterval = () => {
+let getInterval = () => {
     let pos1 = notes.indexOf(getNote1()) + 1;
     let pos2 = notes.indexOf(getNote2()) + 1;
 
@@ -49,7 +49,7 @@ const getInterval = () => {
     return (8 - pos1) + pos2 ;
 }
 
-const getSuffix = (number) => {
+let getSuffix = (number) => {
     switch (number)
     {
         case 2:
@@ -61,7 +61,7 @@ const getSuffix = (number) => {
     }
 }
 
-const toggleLock = (lock) => {
+let toggleLock = (lock) => {
     let isLock1 = lock === "lock1";
     let status = isLock1 ? !note1Lock : !note2Lock;
     let lockElement = isLock1 ? $("#lock1") : $("#lock2");
